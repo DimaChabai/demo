@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<body>
+    <h1>Список юзеров</h1>
+    {{#users}}
+    <form method="post">
+        <input type="submit" value={{id}}>
+    </form>
+    {{name}}
+    </div>
+    {{/users}}
+    <form method="post">
+        <input type="text" name="name" placeholder="Имя">
+        <input type="submit" value="Добавить">
+    </form>
+</body>
+
+</html>
