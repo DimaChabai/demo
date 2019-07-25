@@ -1,10 +1,13 @@
 package com.example.demo;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,11 +20,17 @@ public class User {
 
     private String name;
 
-    private MyArrayList<Book> books= new MyArrayList<>();
+    private String books= "";
     public User() {
     }
 
+    public void addBook(String bookId){ books+=bookId+", ";}
     public User(String name) {
+        this.name = name;
+    }
+
+    public User(String name, String booksid) {
+        books=booksid;
         this.name = name;
     }
 
@@ -39,15 +48,17 @@ public class User {
         return Objects.hash(id, name);
     }
 
-    public List<Book> getBooks() {
+
+    public String getBooks() {
         return books;
     }
 
-    public void setBooks(MyArrayList<Book> books) {
+    public void setBooks(String books) {
         this.books = books;
     }
 
     public Long getId() {
+        System.out.println("getid");
         return id;
     }
 
@@ -56,6 +67,7 @@ public class User {
     }
 
     public String getName() {
+        System.out.println("getname");
         return name;
     }
 

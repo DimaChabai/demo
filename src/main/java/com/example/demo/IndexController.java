@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/")
 public class IndexController {
 
-    final UsersRepository usersRepository;
+    final private UsersRepository usersRepository;
 
     public IndexController(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
@@ -27,6 +27,7 @@ public class IndexController {
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView add(@RequestParam String name, ModelAndView model){
         usersRepository.save(new User(name));
+
         model.setViewName("index");
         model.addObject("users",usersRepository.findAll());
 

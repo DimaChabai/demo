@@ -8,36 +8,54 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import static com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolver.iterator;
+
 @Controller
 @RequestMapping(value = "/book")
 public class AdvanceController {
     BooksRepository booksRepository;
-
-    AdvanceController(BooksRepository booksRepository){
+    final UsersRepository usersRepository;
+    AdvanceController(BooksRepository booksRepository,UsersRepository usersRepository){
         this.booksRepository=booksRepository;
+        this.usersRepository = usersRepository;
+
     }
 
     @GetMapping
-    public ModelAndView getBook(@RequestParam(defaultValue = "0") String id , ModelAndView model){
-        Iterable<Book> t;
-        if(id.equals("0")) t=booksRepository.findAll();
-        else
-        t=booksRepository.findByNum(Long.parseLong(id));
+    public ModelAndView getBook(@RequestParam String id , ModelAndView model){
+        Optional<User> t1;
+        t1 = usersRepository.findById(Long.parseLong(id));
+        String[] boks= t1.get().getBooks().split(", ");
+        List<Book> bookList=new ArrayList<>();
+        if(!boks[0].equals(""))
+        for (String iter :boks) {
+            bookList.add(booksRepository.findByNum(Long.parseLong(iter)).get(0));
+        }
         model.setViewName("book");
-        model.addObject("book",t);
+        model.addObject("id",id);
+        model.addObject("book",bookList);
         return model;
     }
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    private ModelAndView addBook(@RequestParam String name,ModelAndView model){
-        booksRepository.save(new Book(name));
-        model.setViewName("addBook");
-        model.addObject("books",booksRepository.findAll());
+
+    @RequestMapping( method = RequestMethod.POST)
+    private ModelAndView addBookToUser(@RequestParam String id,@RequestParam String bookname,ModelAndView model){
+        List<Book> books= booksRepository.findByName(bookname);
+        User user=usersRepository.findById(Long.parseLong(id)).get();
+        if(books.get(0).getName().equals(bookname))
+            user.addBook(books.get(0).getNum().toString());
+        else {
+            booksRepository.save(new Book(bookname));
+            user.addBook(booksRepository.findByName(bookname).get(0).getNum().toString());
+        }
+
+        usersRepository.save(user);
         return model;
     }
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
-    private ModelAndView add(ModelAndView model){
-        model.setViewName("addBook");
-        model.addObject("books",booksRepository.findAll());
-        return model;
-    }
+
+
 }

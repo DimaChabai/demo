@@ -5,9 +5,7 @@
 <body>
     <h1>Список юзеров</h1>
     {{#users}}
-    <form method="post">
-        <input type="submit" value={{id}}>
-    </form>
+    <a href="/book?id={{id}}">{{id}}</a>
     {{name}}
     </div>
     {{/users}}
