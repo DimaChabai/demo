@@ -6,12 +6,12 @@
     <h1>Список юзеров</h1>
     {{#users}}
     <a href="/book?id={{id}}">{{id}}</a>
-    {{name}}
-    </div>
-    {{/users}}
+    <div>{{name}}
+
+    {{/users}}</div>
     <form method="post">
-        <input type="text" name="name" placeholder="Имя">
-        <input type="submit" value="Добавить">
+        <input type="text" name="name" placeholder="Имя"/>
+        <input type="submit" value="Добавить"/>
     </form>
 </body>
 

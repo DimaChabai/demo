@@ -58,7 +58,7 @@ public class User {
     }
 
     public Long getId() {
-        System.out.println("getid");
+
         return id;
     }
 
@@ -67,7 +67,7 @@ public class User {
     }
 
     public String getName() {
-        System.out.println("getname");
+
         return name;
     }
 
