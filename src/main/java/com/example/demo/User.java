@@ -1,10 +1,7 @@
 package com.example.demo;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name="user")
+
 public class User {
 
     @Id
@@ -20,19 +19,25 @@ public class User {
 
     private String name;
 
-    private String books= "";
+    @JoinTable(
+            name="book_user",
+            joinColumns = {
+                    @JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "book_id", referencedColumnName = "num")})
+    @ManyToMany
+    private List<Book> books;
+
     public User() {
+        books = new ArrayList<>();
     }
 
-    public void addBook(String bookId){ books+=bookId+", ";}
+    public void addBook(Book bookId){ books.add(bookId);}
     public User(String name) {
         this.name = name;
+        books = new ArrayList<>();
     }
 
-    public User(String name, String booksid) {
-        books=booksid;
-        this.name = name;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,11 +54,11 @@ public class User {
     }
 
 
-    public String getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(String books) {
+    public void setBooks(List<Book> books) {
         this.books = books;
     }
 
