@@ -7,11 +7,12 @@
 <body>
 {{#book}}
 <div>
-{{num}} <a  href="/edit?num={{num}}">{{name}}</a>
+{{num}} <a  href="/edit?num={{num}}">{{name}}</a> <img src="/img/{{filename}}">
 </div>
 {{/book}}
-<form method="post">
-
+<form method="post" action="/book" enctype="multipart/form-data">
+    <input type="text" name="id" value="{{id}}" hidden="hidden"/>
+    <input type="file" name="file" />
     <input type="text" name="bookname"/>
     <input type="submit" value="Добавить"/>
 </form>

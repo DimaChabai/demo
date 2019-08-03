@@ -11,15 +11,26 @@ public class Book {
     @GeneratedValue
     private Long num;
 
+    private String filename;
     private String name;
 
     public Book(){}
-    public Book(String name) {
+
+    public Book(String filename, String name) {
+        this.filename = filename;
         this.name = name;
     }
 
     public Long getNum() {
         return num;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public void setNum(Long num) {
