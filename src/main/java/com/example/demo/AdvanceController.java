@@ -53,7 +53,7 @@ public class AdvanceController {
         if (!books.isEmpty()) {
             if (!user.getBooks().contains(books.get(0)))
                 user.addBook(books.get(0));
-        } else if (file != null) {
+        } else if (file != null && !file.getOriginalFilename().isEmpty()) {
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
