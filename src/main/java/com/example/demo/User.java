@@ -2,22 +2,24 @@ package com.example.demo;
 
 import javax.persistence.*;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name="user")
-
 public class User {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String name;
+    private String username;
+    private String password;
+    private boolean active;
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name="user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
 
     @JoinTable(
             name="book_user",
@@ -26,18 +28,22 @@ public class User {
             inverseJoinColumns = {
                     @JoinColumn(name = "book_id", referencedColumnName = "num")})
     @ManyToMany
-    private List<Book> books;
+    private List<Book> books=new ArrayList<>();
 
     public User() {
-        books = new ArrayList<>();
+
     }
 
     public void addBook(Book bookId){ books.add(bookId);}
-    public User(String name) {
-        this.name = name;
-        books = new ArrayList<>();
+    public User(String username) {
+        this.username = username;
+
     }
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -45,17 +51,41 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return id.equals(user.id) &&
-                Objects.equals(name, user.name);
+                Objects.equals(username, user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, username);
     }
 
 
     public List<Book> getBooks() {
         return books;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public void setBooks(List<Book> books) {
@@ -71,12 +101,12 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
+    public String getUsername() {
 
-        return name;
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
