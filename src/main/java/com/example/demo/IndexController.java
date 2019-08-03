@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collections;
+import java.util.List;
 
 @Controller
 public class IndexController {
@@ -29,8 +30,8 @@ public class IndexController {
     }
 
     @PostMapping("/main")
-    public ModelAndView add(@RequestParam String name, ModelAndView model){
-        usersRepository.save(new User(name));
+    public ModelAndView add(@RequestParam String username, ModelAndView model){
+        usersRepository.save(new User(username));
         model.setViewName("main");
         model.addObject("users",usersRepository.findAll());
         return model;
@@ -43,9 +44,10 @@ public class IndexController {
 
     @PostMapping("/registration")
     public ModelAndView addUser(User user, ModelAndView model){
-        User userdb = usersRepository.findByUsername(user.getUsername()).get(0);
+        List<User> users= usersRepository.findByUsername(user.getUsername());
+
         System.out.println("sdqwdsadqwd");
-        if(userdb!=null){
+        if(!users.isEmpty()){
             model.addObject("message","User exists!");
             model.setViewName("registration");
             return model;
@@ -53,7 +55,7 @@ public class IndexController {
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         usersRepository.save(user);
-        model.setViewName("registration");
+        model.setViewName( "redirect:/login");
         return model;
     }
 

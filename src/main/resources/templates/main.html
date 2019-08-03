@@ -5,7 +5,7 @@
 <body>
 <form action="/logout" method="post">
     <input type="submit" value="Sign Out"/>
-    <input type="hidden" username="_csrf" value="{{_csrf.token}}" />
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
 </form>
     <h1>Список юзеров</h1>
     {{#users}}
@@ -14,9 +14,9 @@
     </div>
     {{/users}}
     <form method="post">
-        <input type="text" username="username" placeholder="Имя"/>
+        <input type="text" name="username" placeholder="Имя"/>
         <input type="submit" value="Добавить"/>
-        <input type="hidden" username="_csrf" value="{{_csrf.token}}" />
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     </form>
 
 </body>

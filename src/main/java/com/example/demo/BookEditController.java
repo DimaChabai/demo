@@ -29,10 +29,14 @@ public class BookEditController {
 
     @PostMapping
     private ModelAndView editBookPost(@RequestParam String num,@RequestParam String newName ,ModelAndView model){
-        List<Book> bookList=booksRepository.findByNum(Long.parseLong(num));
-        Book book=bookList.get(0);
-        book.setName(newName);
-        booksRepository.save(book);
+        if(booksRepository.findByName(newName).isEmpty()) {
+            List<Book> bookList = booksRepository.findByNum(Long.parseLong(num));
+            Book book = bookList.get(0);
+            book.setName(newName);
+            booksRepository.save(book);
+        }else{
+            model.addObject("message","Имя занято");
+        }
 
         editBookGet(num,model);
 

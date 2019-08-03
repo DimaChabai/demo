@@ -7,12 +7,14 @@
 <body>
 
 <div>
-    {{num}} {{username}}
+    {{num}} {{name}}
 </div>
-
+{{#message}}
+    {{message}}
+{{/message}}
 <form method="post" >
-
-    <input type="text" username="newName"/>
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    <input type="text" name="newName"/>
     <input type="submit" value="Изменитть"/>
 </form>
 </body>
