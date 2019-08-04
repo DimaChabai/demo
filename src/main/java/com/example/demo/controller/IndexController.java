@@ -1,20 +1,26 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.BooksRepository;
+import com.example.demo.Role;
+import com.example.demo.UsersRepository;
+import com.example.demo.entity.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.naming.AuthenticationException;
 import java.util.Collections;
 import java.util.List;
 
 @Controller
 public class IndexController {
-
-
     final private UsersRepository usersRepository;
+    final private BooksRepository booksRepository;
 
-    public IndexController(UsersRepository usersRepository) {
+    public IndexController(UsersRepository usersRepository, BooksRepository booksRepository) {
         this.usersRepository = usersRepository;
+        this.booksRepository = booksRepository;
     }
 
     @GetMapping("/")
@@ -25,7 +31,9 @@ public class IndexController {
     @GetMapping("/main")
     public ModelAndView main(ModelAndView model) {
         model.setViewName("main");
-        model.addObject("users",usersRepository.findAll());
+        model.addObject("books",booksRepository.findAll());
+        org.springframework.security.core.userdetails.User  user= (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addObject("user_id",usersRepository.findByUsername(user.getUsername()).get(0).getId());
         return model;
     }
 
@@ -37,7 +45,7 @@ public class IndexController {
         return model;
     }
     @GetMapping("/registration")
-    public ModelAndView regis(ModelAndView model){
+    public ModelAndView registration(ModelAndView model){
         model.setViewName("registration");
         return model;
     }
