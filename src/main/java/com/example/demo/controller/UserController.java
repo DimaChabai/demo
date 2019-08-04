@@ -14,13 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
 
     @Autowired
-    final UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
     public UserController(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
     @GetMapping
-    private ModelAndView getUsers(ModelAndView model){
+    public ModelAndView getUsers(ModelAndView model){
         model.addObject("users",usersRepository.findAll());
         model.setViewName("users");
         return model;
