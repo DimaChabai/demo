@@ -61,7 +61,7 @@ public class IndexController {
             return model;
         }
         user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
+        user.setRoles(Collections.singleton(Role.ADMIN));
         usersRepository.save(user);
         model.setViewName( "redirect:/login");
         return model;

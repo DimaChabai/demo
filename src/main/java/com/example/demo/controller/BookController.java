@@ -31,7 +31,6 @@ public class BookController {
 
     @GetMapping
     public ModelAndView getBook(@RequestParam("user_id") User user, ModelAndView model) {
-
         List<Book> boks =user.getBooks();
         List<Book> bookList = new ArrayList<>();
         for (Book iter : boks) {
@@ -48,9 +47,8 @@ public class BookController {
                                        @RequestParam String bookname,
                                        @RequestParam("file") MultipartFile file,
                                        ModelAndView model) throws IOException {
+
         List<Book> books = booksRepository.findByName(bookname);
-
-
         if (!books.isEmpty()) {
             if (!user.getBooks().contains(books.get(0)))
                 user.addBook(books.get(0));
