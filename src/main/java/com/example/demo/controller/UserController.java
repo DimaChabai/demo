@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.UsersRepository;
+import com.example.demo.repos.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

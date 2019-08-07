@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Book;
-import com.example.demo.BooksRepository;
+import com.example.demo.repos.BooksRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +24,7 @@ public class BookEditController {
         Book book=booksRepository.findByNum(Long.parseLong(num)).get(0);
         model.addObject("num",book.getNum());
         model.addObject("name",book.getName());
-        model.setViewName("editbook");
+        model.setViewName("edit");
         return model;
     }
 
@@ -39,7 +39,7 @@ public class BookEditController {
             model.addObject("message","Имя занято");
         }
 
-        editBookGet(num,model);
+        model.setViewName("redirect:/main");
 
         return model;
     }

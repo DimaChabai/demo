@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+
 </head>
 <body>
+<a href="/main">Назад</a>
+<form action="/book/filter" method="post">
+    <input type="text" name="filter" value="{{#filter}}{{filter}}{{/filter}}">
+    <input type="text" name="id" value="{{id}}" hidden="hidden"/>
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    <input type="submit" value="Filter">
+</form>
 {{#book}}
 <div>
 {{num}} <a  href="/edit?num={{num}}">{{name}}</a>
-    <img src="/img/{{filename}}">
+    <a  href="/img/{{filename}} " download>Книга</a>
+
 </div>
 {{/book}}
 <form method="post" action="/book" enctype="multipart/form-data">

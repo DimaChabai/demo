@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.repos;
 
 import com.example.demo.entity.Book;
 import org.springframework.data.repository.CrudRepository;
@@ -10,4 +10,7 @@ import java.util.List;
 public interface BooksRepository extends CrudRepository<Book,Long> {
         List<Book> findByNum(Long num);
         List<Book> findByName(String name);
+        List<Book> findByNameGreaterThan(String name);
+        List<Book> findByNameStartingWith(String name);
+        List<Book> findByNameContaining(String name);
 }

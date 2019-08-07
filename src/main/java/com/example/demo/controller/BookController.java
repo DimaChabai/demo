@@ -2,10 +2,12 @@ package com.example.demo.controller;
 
 
 import com.example.demo.entity.Book;
-import com.example.demo.BooksRepository;
+import com.example.demo.repos.BooksRepository;
 import com.example.demo.entity.User;
-import com.example.demo.UsersRepository;
+import com.example.demo.repos.UsersRepository;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/book")
@@ -30,13 +33,15 @@ public class BookController {
     }
 
     @GetMapping
-    public ModelAndView getBook(@RequestParam("user_id") User user, ModelAndView model) {
+    public ModelAndView getBook(ModelAndView model) {
+
+        org.springframework.security.core.userdetails.User  usr= (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user=usersRepository.findByUsername(usr.getUsername()).get(0);
         List<Book> boks =user.getBooks();
         List<Book> bookList = new ArrayList<>();
         for (Book iter : boks) {
             bookList.add(booksRepository.findByNum(iter.getNum()).get(0));
         }
-        model.setViewName("book");
         model.addObject("id", user.getId());
         model.addObject("book", bookList);
         return model;
@@ -66,8 +71,20 @@ public class BookController {
         usersRepository.save(user);
         List<Book> b=user.getBooks();
         List<Book> ob=new ArrayList<>(b);
+        model.setViewName("book");
         model.addObject("book",ob);
         model.addObject("id",user.getId());
+        return model;
+    }
+    @GetMapping("/filter")
+    public ModelAndView filter(@RequestParam String filter, @RequestParam String id, ModelAndView model){
+        List<Book>  repoBooks=booksRepository.findByNameContaining(filter);
+        List<Book> userBooks=usersRepository.findById(Long.parseLong(id)).get().getBooks();
+        List<Book> books=repoBooks.stream().filter(userBooks::contains).collect(Collectors.toList());
+        model.addObject("book",books);
+        model.addObject("id",id);
+        model.addObject("filter",filter);
+        model.setViewName("/book");
         return model;
     }
 }

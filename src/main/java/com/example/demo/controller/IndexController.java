@@ -1,15 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.BooksRepository;
+import com.example.demo.entity.Book;
+import com.example.demo.repos.BooksRepository;
 import com.example.demo.Role;
-import com.example.demo.UsersRepository;
+import com.example.demo.repos.UsersRepository;
 import com.example.demo.entity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.naming.AuthenticationException;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,5 +66,15 @@ public class IndexController {
         model.setViewName( "redirect:/login");
         return model;
     }
+    @GetMapping("/add")
+    public ModelAndView addBook(@RequestParam String num, @RequestParam String user_id, ModelAndView model){
+        User curUser=usersRepository.findById(Long.parseLong(user_id)).get();
+        Book book=booksRepository.findByNum(Long.parseLong(num)).get(0);
+        if(!curUser.getBooks().contains(book))
+        curUser.addBook(book);
+        usersRepository.save(curUser);
+        model.setViewName("redirect:/main");
 
+        return model;
+    }
 }

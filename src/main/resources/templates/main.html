@@ -12,7 +12,12 @@
     <h1>Список книг</h1>
     {{#books}}
     <div>
-        {{num}} {{name}}
+        {{num}} {{name}} <form action="/add">
+        <button>Добавить</button>
+        <input hidden="hidden" type="text" name="num"  value="{{num}}"/>
+        <input type="text" hidden="hidden" name="user_id" value="{{user_id}}" >
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    </form>
     </div>
     {{/books}}
     <form method="post">
