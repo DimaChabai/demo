@@ -6,9 +6,11 @@
 </head>
 <body>
 <a href="/book">Назад </a>
+{{#book}}
 <div>
-    {{num}} {{name}}
+    {{num}} {{name}}  <img  src="/img/{{filename}} " />
 </div>
+{{/book}}
 {{#message}}
     {{message}}
 {{/message}}

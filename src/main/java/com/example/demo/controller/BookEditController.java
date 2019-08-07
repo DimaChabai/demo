@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Book;
 import com.example.demo.repos.BooksRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/edit")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class BookEditController {
     BooksRepository booksRepository;
 
@@ -20,10 +22,9 @@ public class BookEditController {
         this.booksRepository = booksRepository;
     }
     @GetMapping
-    private ModelAndView editBookGet(@RequestParam String num,ModelAndView model){
-        Book book=booksRepository.findByNum(Long.parseLong(num)).get(0);
-        model.addObject("num",book.getNum());
-        model.addObject("name",book.getName());
+    private ModelAndView editBookGet(ModelAndView model){
+        Iterable<Book> books=booksRepository.findAll();
+        model.addObject("book",books);
         model.setViewName("edit");
         return model;
     }
@@ -38,9 +39,7 @@ public class BookEditController {
         }else{
             model.addObject("message","Имя занято");
         }
-
-        model.setViewName("redirect:/main");
-
+        model.setViewName("redirect:/edit");
         return model;
     }
 
