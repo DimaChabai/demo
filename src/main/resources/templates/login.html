@@ -6,9 +6,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-{{#captchaError}}
-    {{captchaError}}
-{{/captchaError}}
+
 <form action="/login" method="post">
     <div><label> User Name : <input type="text" name="username"/> </label></div>
     <div><label> Password: <input type="password" name="password"/> </label></div>
@@ -16,6 +14,9 @@
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <div><input type="submit" value="Sign In"/></div>
 </form>
+<div class="container unauthenticated">
+    With Facebook: <a href="/login/facebook">click here</a>
+</div>
 <a href="/registration">Регистрация</a>
 </body>
 </html>
