@@ -1,15 +1,20 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CaptchaResponseDto;
 import com.example.demo.entity.Book;
 import com.example.demo.repos.BooksRepository;
 import com.example.demo.Role;
 import com.example.demo.repos.UsersRepository;
 import com.example.demo.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,6 +22,14 @@ import java.util.List;
 public class IndexController {
     final private UsersRepository usersRepository;
     final private BooksRepository booksRepository;
+
+    private final String CAPTHCA_URL="https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
+
+    @Value("${recaptcha.secret}")
+    private String secret;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public IndexController(UsersRepository usersRepository, BooksRepository booksRepository) {
         this.usersRepository = usersRepository;
@@ -51,12 +64,21 @@ public class IndexController {
     }
 
     @PostMapping("/registration")
-    public ModelAndView addUser(User user, ModelAndView model){
+    public ModelAndView addUser(User user,
+                                ModelAndView model,
+                                @RequestParam("g-recaptcha-response") String captchaResponse ){
         List<User> users= usersRepository.findByUsername(user.getUsername());
+        String url=String.format(CAPTHCA_URL,secret,captchaResponse);
+        CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
-        System.out.println("sdqwdsadqwd");
+        if(!response.isSuccess()){
+            model.addObject("captchaError","FillCapthca");
+        }
         if(!users.isEmpty()){
             model.addObject("message","User exists!");
+
+        }
+        if(!response.isSuccess() && !users.isEmpty()){
             model.setViewName("registration");
             return model;
         }
