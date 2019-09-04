@@ -6,15 +6,18 @@ import com.example.demo.repos.BooksRepository;
 import com.example.demo.Role;
 import com.example.demo.repos.UsersRepository;
 import com.example.demo.entity.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,15 +41,18 @@ public class IndexController {
 
     @GetMapping("/")
     public ModelAndView index(ModelAndView model){
+
         model.setViewName("index");
         return model;
     }
     @GetMapping("/main")
-    public ModelAndView main(ModelAndView model) {
+    public ModelAndView main(ModelAndView model, Principal principal) {
         model.setViewName("main");
         model.addObject("books",booksRepository.findAll());
-        org.springframework.security.core.userdetails.User  user= (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        model.addObject("user_id",usersRepository.findByUsername(user.getUsername()).get(0).getId());
+
+        String  username=  SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(principal.getName());
+        model.addObject("user_id",usersRepository.findByUsername(username).getId());
         return model;
     }
 
@@ -62,23 +68,27 @@ public class IndexController {
         model.setViewName("registration");
         return model;
     }
-
+    @GetMapping("/user")
+    public ModelAndView usr(ModelAndView model){
+        System.out.println("user tut");
+        return model;
+    }
     @PostMapping("/registration")
     public ModelAndView addUser(User user,
                                 ModelAndView model,
                                 @RequestParam("g-recaptcha-response") String captchaResponse ){
-        List<User> users= usersRepository.findByUsername(user.getUsername());
+        User users= usersRepository.findByUsername(user.getUsername());
         String url=String.format(CAPTHCA_URL,secret,captchaResponse);
         CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
         if(!response.isSuccess()){
             model.addObject("captchaError","FillCapthca");
         }
-        if(!users.isEmpty()){
+        if(users!=null){
             model.addObject("message","User exists!");
 
         }
-        if(!response.isSuccess() && !users.isEmpty()){
+        if(!response.isSuccess() && users!=null){
             model.setViewName("registration");
             return model;
         }

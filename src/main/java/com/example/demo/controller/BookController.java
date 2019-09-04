@@ -36,7 +36,7 @@ public class BookController {
     public ModelAndView getBook(ModelAndView model) {
 
         org.springframework.security.core.userdetails.User  usr= (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user=usersRepository.findByUsername(usr.getUsername()).get(0);
+        User user=usersRepository.findByUsername(usr.getUsername());
         List<Book> boks =user.getBooks();
         List<Book> bookList = new ArrayList<>();
         for (Book iter : boks) {
