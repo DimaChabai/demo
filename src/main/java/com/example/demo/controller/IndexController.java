@@ -49,9 +49,7 @@ public class IndexController {
     public ModelAndView main(ModelAndView model, Principal principal) {
         model.setViewName("main");
         model.addObject("books",booksRepository.findAll());
-
         String  username=  SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(principal.getName());
         model.addObject("user_id",usersRepository.findByUsername(username).getId());
         return model;
     }
@@ -68,11 +66,7 @@ public class IndexController {
         model.setViewName("registration");
         return model;
     }
-    @GetMapping("/user")
-    public ModelAndView usr(ModelAndView model){
-        System.out.println("user tut");
-        return model;
-    }
+
     @PostMapping("/registration")
     public ModelAndView addUser(User user,
                                 ModelAndView model,

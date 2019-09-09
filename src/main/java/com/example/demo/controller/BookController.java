@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,10 +34,10 @@ public class BookController {
     }
 
     @GetMapping
-    public ModelAndView getBook(ModelAndView model) {
+    public ModelAndView getBook(ModelAndView model, Principal principal) {
 
-        org.springframework.security.core.userdetails.User  usr= (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user=usersRepository.findByUsername(usr.getUsername());
+
+        User user=usersRepository.findByUsername(principal.getName());
         List<Book> boks =user.getBooks();
         List<Book> bookList = new ArrayList<>();
         for (Book iter : boks) {

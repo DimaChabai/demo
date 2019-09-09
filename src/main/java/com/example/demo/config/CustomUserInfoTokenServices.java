@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.config;
 
+import com.example.demo.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repos.UsersRepository;
 import org.apache.commons.logging.Log;
@@ -33,7 +34,8 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         private OAuth2RestOperations restTemplate;
         private String tokenType = "Bearer";
         private AuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
-        private PrincipalExtractor principalExtractor = new FixedPrincipalExtractor();
+        private PrincipalExtractor principalExtractor = new CustomPrincipalExtractor();
+
         private UsersRepository usersRepository;
 
     public void setUsersRepository(UsersRepository usersRepository) {
