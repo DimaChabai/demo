@@ -1,4 +1,9 @@
 package com.example.demo.services;
 
-public class BookService {
+import org.springframework.stereotype.Service;
+
+@Service
+public class BookService  {
+
 }
+

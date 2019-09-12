@@ -75,6 +75,7 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
                 newUser.setActive(true);
                 newUser.setRoles(Collections.singleton(Role.USER));
                 newUser.setPassword("");
+                newUser.setBooks(new ArrayList<>());
                 usersRepository.save(newUser);
             }
             if (map.containsKey("error")) {

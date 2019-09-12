@@ -1,6 +1,10 @@
 package com.example.demo.entity;
 
 import com.example.demo.Role;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -33,7 +37,9 @@ public class User implements UserDetails{
             inverseJoinColumns = {
                     @JoinColumn(name = "book_id", referencedColumnName = "num")})
     @ManyToMany
-    private List<Book> books=new ArrayList<>();
+    @Fetch(FetchMode.SELECT)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Book> books;
 
     public User() {
 
