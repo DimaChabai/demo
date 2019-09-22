@@ -8,7 +8,6 @@
 <a href="/main">Назад</a>
 <form action="/book/filter" method="post">
     <input type="text" name="filter" value="{{#filter}}{{filter}}{{/filter}}">
-    <input type="text" name="id" value="{{id}}" hidden="hidden"/>
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <input type="submit" value="Filter">
 </form>
@@ -19,12 +18,6 @@
 
 </div>
 {{/book}}
-<form method="post" action="/book" enctype="multipart/form-data">
-    <input type="text" name="id" value="{{id}}" hidden="hidden"/>
-    <input type="file" name="file" />
-    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-    <input type="text" name="bookname"/>
-    <input type="submit" value="Добавить"/>
-</form>
+
 </body>
 </html>

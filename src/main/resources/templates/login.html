@@ -3,14 +3,13 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example </title>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 </head>
 <body>
 
 <form action="/login" method="post">
     <div><label> User Name : <input type="text" name="username"/> </label></div>
     <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div class="g-recaptcha" data-sitekey="6LemVLYUAAAAAIOOkD4Zriu6lE7N2jDBMFAtLpg_"></div>
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <div><input type="submit" value="Sign In"/></div>
 </form>
@@ -18,7 +17,7 @@
     With Facebook: <a href="/login/facebook">click here</a>
 </div>
 <div class="container unauthenticated">
-With Facebook: <a href="/login/google">click here</a>
+With Google: <a href="/login/google">click here</a>
 </div>
 <a href="/registration">Регистрация</a>
 </body>

@@ -3,6 +3,7 @@ package com.example.demo.config;
 import com.example.demo.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repos.UsersRepository;
+import com.example.demo.services.UserService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,10 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         private AuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
         private PrincipalExtractor principalExtractor = new CustomPrincipalExtractor();
 
-        private UsersRepository usersRepository;
+        private UserService userService;
 
-    public void setUsersRepository(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public void setUsersRepository( UserService userService) {
+        this.userService = userService;
     }
 
 
@@ -69,22 +70,35 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         @Override
         public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
             Map<String, Object> map = this.getMap(this.userInfoEndpointUrl, accessToken);
-            if(usersRepository.findByUsername((String)map.get("name"))==null) {
-                User newUser = new User();
-                newUser.setUsername((String) map.get("name"));
-                newUser.setActive(true);
-                newUser.setRoles(Collections.singleton(Role.USER));
-                newUser.setPassword("");
-                newUser.setBooks(new ArrayList<>());
-                usersRepository.save(newUser);
-            }
             if (map.containsKey("error")) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("userinfo returned error: " + map.get("error"));
                 }
-
                 throw new InvalidTokenException(accessToken);
             } else {
+            User googleUser=userService.loadUserByUsername((String) map.get("sub"));
+            User fbUser=userService.loadUserByUsername((String)map.get("id"));
+            if(userService.loadUserByUsername((String)map.get("name"))==null
+                    || googleUser==null
+                    &&  fbUser==null) {
+                User newUser = new User();
+                if (this.userInfoEndpointUrl.contains("facebook")) {
+                    if (map.containsKey("id")) newUser.setFbId((String) map.get("id"));
+                } else if (this.userInfoEndpointUrl.equals("https://www.googleapis.com/oauth2/v3/userinfo")) {
+                    if (map.containsKey("sub")) newUser.setGoogleSub((String) map.get("sub"));
+                }
+                newUser.setUsername((String) map.get("name"));
+                newUser.setActive(true);
+                newUser.setRoles(Collections.singleton(Role.USER));
+                map.put("authorities", "USER");
+                newUser.setPassword("");
+                newUser.setBooks(new ArrayList<>());
+
+                userService.saveUser(newUser);
+            }else {
+                map.put("authorities", googleUser == null ? fbUser.getAuthorities() : googleUser.getAuthorities());
+            }
+
                 return this.extractAuthentication(map);
             }
         }
@@ -133,5 +147,9 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
                 return Collections.singletonMap("error", "Could not fetch user details");
             }
         }
+
+    public void setUserService(UserService userService) {
+        this.userService=userService;
     }
+}
 

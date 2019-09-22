@@ -18,7 +18,7 @@ public class AuthProvider implements AuthenticationProvider {
     UsersRepository usersRepository;
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        User user= usersRepository.findByUsername(authentication.getName());
+        User user= usersRepository.findByUsername(authentication.getName()).get(0);
         if(user!=null && user.getUsername().equals(authentication.getName())){
             if(!authentication.getPrincipal().equals(user.getPassword())){
                 throw new BadCredentialsException("Wrong password");

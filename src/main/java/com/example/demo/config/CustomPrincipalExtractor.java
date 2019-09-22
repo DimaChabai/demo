@@ -1,13 +1,11 @@
 package com.example.demo.config;
 
-
-
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 
 import java.util.Map;
 
 public class CustomPrincipalExtractor implements PrincipalExtractor {
-    private static final String[] PRINCIPAL_KEYS = new String[]{"user", "username", "userid", "user_id", "login","name", "id" };
+    private static final String[] PRINCIPAL_KEYS = new String[]{"user", "username","sub", "id", "userid", "user_id", "login", "name"};
 
     public CustomPrincipalExtractor() {
     }

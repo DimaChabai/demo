@@ -23,6 +23,25 @@ public class User implements UserDetails{
 
     private String username;
     private String password;
+    private String fbId;
+    private String googleSub;
+
+    public String getGoogleSub() {
+        return googleSub;
+    }
+
+    public void setGoogleSub(String googleSub) {
+        this.googleSub = googleSub;
+    }
+
+    public String getFbId() {
+        return fbId;
+    }
+
+    public void setFbId(String fbId) {
+        this.fbId = fbId;
+    }
+
     private boolean active=false;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)

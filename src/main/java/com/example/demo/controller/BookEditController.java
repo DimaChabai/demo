@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Book;
 import com.example.demo.repos.BooksRepository;
+import com.example.demo.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +18,15 @@ import java.util.List;
 @RequestMapping("/edit")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class BookEditController {
-    BooksRepository booksRepository;
+    @Autowired
+    BookService bookService;
 
-    public BookEditController(BooksRepository booksRepository) {
-        this.booksRepository = booksRepository;
+    public BookEditController(BookService bookService) {
+        this.bookService = bookService;
     }
     @GetMapping
     private ModelAndView editBookGet(ModelAndView model){
-        Iterable<Book> books=booksRepository.findAll();
+        Iterable<Book> books=bookService.getAllBooks();
         model.addObject("book",books);
         model.setViewName("edit");
         return model;
@@ -31,11 +34,9 @@ public class BookEditController {
 
     @PostMapping
     private ModelAndView editBookPost(@RequestParam String num,@RequestParam String newName ,ModelAndView model){
-        if(booksRepository.findByName(newName).isEmpty()) {
-            List<Book> bookList = booksRepository.findByNum(Long.parseLong(num));
-            Book book = bookList.get(0);
-            book.setName(newName);
-            booksRepository.save(book);
+        if(bookService.getBookByName(newName)==null) {
+            Book book = bookService.getBookById(Long.parseLong(num));
+            bookService.updateBook(book,newName);
         }else{
             model.addObject("message","Имя занято");
         }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface BooksRepository extends CrudRepository<Book,Long> {
-    List<Book> findByNum(Long num);
-    List<Book> findByName(String name);
+    Book findByNum(Long num);
+    Book findByName(String name);
     List<Book> findByNameContaining(String name);
 }

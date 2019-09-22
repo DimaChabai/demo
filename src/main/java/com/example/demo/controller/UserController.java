@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.repos.UsersRepository;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,14 +14,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private final UserService userService;
 
-    public UserController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public UserController( UserService userService) {
+        this.userService = userService;
     }
     @GetMapping
     public ModelAndView getUsers(ModelAndView model){
-        model.addObject("users",usersRepository.findAll());
+        model.addObject("users",userService.getAllUsers());
         model.setViewName("users");
         return model;
     }

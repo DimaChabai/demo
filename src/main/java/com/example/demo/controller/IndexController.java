@@ -1,40 +1,40 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.*;
-
-
 import com.example.demo.dto.CaptchaResponseDto;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.User;
-import com.example.demo.repos.BooksRepository;
-import com.example.demo.repos.UsersRepository;
+import com.example.demo.services.BookService;
 import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class IndexController {
 
+    @Value("${upload.path}")
+    private String uploadPath;
     @Autowired
-    private UsersRepository usersRepository;
-    final private BooksRepository booksRepository;
+    private final BookService bookService;
     @Autowired
-    private UserService userService;
+    private final UserService userService;
     private final String CAPTHCA_URL="https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
 
     @Value("${recaptcha.secret}")
@@ -43,9 +43,9 @@ public class IndexController {
     @Autowired
     private RestTemplate restTemplate;
 
-    public IndexController(UsersRepository usersRepository, BooksRepository booksRepository) {
-
-        this.booksRepository = booksRepository;
+    public IndexController(BookService bookService, UserService userService) {
+        this.userService=userService;
+        this.bookService=bookService;
     }
 
     @GetMapping("/")
@@ -55,18 +55,37 @@ public class IndexController {
         return model;
     }
     @GetMapping("/main")
-    public ModelAndView main(ModelAndView model, Principal principal) {
+    public ModelAndView main(ModelAndView model) {
+        model.addObject("books",bookService.getAllBooks());
         model.setViewName("main");
-        model.addObject("books",booksRepository.findAll());
-        model.addObject("user_id",userService.loadUserByUsername(principal.getName()));
         return model;
     }
 
     @PostMapping("/main")
-    public ModelAndView add(@RequestParam String username, ModelAndView model){
-        userService.addUser(new User(username));
-        model.setViewName("main");
-        model.addObject("users",userService.getAllUser());
+    private ModelAndView addBook(Principal usr,
+                                 @RequestParam String bookName,
+                                 @RequestParam("file") MultipartFile file,
+                                 ModelAndView model) throws IOException {
+        User user=userService.loadUserByUsername(usr.getName());
+        Book book = bookService.getBookByName(bookName);
+        if (book!= null) {
+            if (!user.getBooks().contains(book))
+                user.addBook(book);
+        } else if (file != null && !file.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            String uuidFile = UUID.randomUUID().toString();
+            String resultFilename = uuidFile + "." + file.getOriginalFilename();
+            file.transferTo(new File(uploadPath + "/" + resultFilename));
+            bookService.addBook(new Book(resultFilename, bookName));
+            user.addBook(bookService.getBookByName(bookName));
+        }
+        userService.updateUser(user);
+        List<Book> b=user.getBooks();
+        model.setViewName("book");
+        model.addObject("book",b);
         return model;
     }
     @GetMapping("/registration")
@@ -84,10 +103,7 @@ public class IndexController {
         CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
         if(!response.isSuccess()){
-            model.addObject("captchaError","FillCapthca");
-        }
-
-        if(!response.isSuccess()){
+            model.addObject("message","FillCapthca");
             model.setViewName("registration");
             return model;
         }
@@ -100,11 +116,9 @@ public class IndexController {
         return model;
     }
     @GetMapping("/add/{book}")
-    public ModelAndView addBook(@PathVariable Book book, @AuthenticationPrincipal User user, ModelAndView model){
-
-        if(!user.getBooks().contains(book))
-        user.addBook(book);
-        userService.updateUser(user);
+    public ModelAndView addBook(@PathVariable Book book, Principal principal, ModelAndView model){
+        userService.addBookToUser(userService.loadUserByUsername(principal.getName())
+                ,bookService.getBookByName(book.getName()));
         model.setViewName("redirect:/main");
 
         return model;

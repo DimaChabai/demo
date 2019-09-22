@@ -8,23 +8,23 @@
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
 </form>
 <a href="/users">Пользователи</a>
-<div><a href="/book?user_id={{user_id}}">Мои книги</a></div>
+<div><a href="/book">Мои книги</a></div>
     <h1>Список книг</h1>
     {{#books}}
     <div>
         {{num}} {{name}}
         <form action="/add/{{num}}">
         <button>Добавить</button>
-
         <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     </form>
     </div>
     {{/books}}
-    <form method="post">
 
-        <input type="text" name="username" placeholder="Имя"/>
-        <input type="submit" value="Добавить"/>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" />
         <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+        <input type="text" name="bookName"/>
+        <input type="submit" value="Добавить"/>
     </form>
 
 </body>

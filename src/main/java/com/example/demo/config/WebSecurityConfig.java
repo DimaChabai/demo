@@ -5,6 +5,7 @@ package com.example.demo.config;
 
 import com.example.demo.repos.UsersRepository;
 import com.example.demo.services.AuthProvider;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,15 +34,15 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableOAuth2Client
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
     @Autowired
-    UsersRepository usersRepository;
+    UserService userService;
     @Autowired
     private AuthProvider authProvider;
 
@@ -80,7 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CustomUserInfoTokenServices tokenServices = new CustomUserInfoTokenServices(
                 client.getResource().getUserInfoUri(), client.getClient().getClientId());
         tokenServices.setRestTemplate(template);
-        tokenServices.setUsersRepository(usersRepository);
+        tokenServices.setUserService(userService);
         filter.setTokenServices(tokenServices);
         return filter;
 
@@ -99,6 +100,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                     .permitAll()
+                .and()
+                    .rememberMe()
                 .and()
                     .logout().logoutSuccessUrl("/").permitAll()
                 .and()
