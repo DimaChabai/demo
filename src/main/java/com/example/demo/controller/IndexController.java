@@ -85,7 +85,7 @@ public class IndexController {
         userService.updateUser(user);
         List<Book> b=user.getBooks();
         model.setViewName("book");
-        model.addObject("book",b);
+        model.addObject("books",b);
         return model;
     }
     @GetMapping("/registration")
@@ -118,7 +118,7 @@ public class IndexController {
     @GetMapping("/add/{book}")
     public ModelAndView addBook(@PathVariable Book book, Principal principal, ModelAndView model){
         userService.addBookToUser(userService.loadUserByUsername(principal.getName())
-                ,bookService.getBookByName(book.getName()));
+                ,bookService.getBookById(book.getNum()));
         model.setViewName("redirect:/main");
 
         return model;

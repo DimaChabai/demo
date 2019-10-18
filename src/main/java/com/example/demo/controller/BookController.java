@@ -36,20 +36,27 @@ public class BookController {
     }
 
     @GetMapping
-    public ModelAndView getUsersBooks(ModelAndView model, Principal principal) {
-        User user=userService.loadUserByUsername(principal.getName());
-        model.addObject("book", user.getBooks());
+    public ModelAndView getUsersBooks(@RequestParam(required = false) String filter,ModelAndView model, @AuthenticationPrincipal User user) {
+        List<Book> books=user.getBooks();
+        if(filter!=null && !filter.isEmpty()) {
+            List<Book> userBooks = user.getBooks();
+            books = userBooks.stream().filter((v) -> v.getName().contains(filter)).collect(Collectors.toList());
+            model.addObject("filter", filter);
+        }
+        model.addObject("books", books);
         return model;
     }
 
 
-    @GetMapping("/filter")
-    public ModelAndView filter(@RequestParam String filter, @AuthenticationPrincipal User user, ModelAndView model){
-        List<Book> repoBooks=bookService.getBookByNameContaining(filter);
-        List<Book> userBooks=user.getBooks();
-        List<Book> books=repoBooks.stream().filter(userBooks::contains).collect(Collectors.toList());
+
+    @GetMapping("/delFromList")
+    public ModelAndView delBookFromList(@RequestParam Long bookId, @AuthenticationPrincipal User user,ModelAndView model){
+        List<Book> books=userService.loadUserByUsername(user.getUsername()).getBooks();
+        Book book=bookService.getBookById(bookId);
+        books=books.stream().filter((v)->v.getNum()!=bookId).collect(Collectors.toList());
+        user.setBooks(books);
+        userService.updateUser(user);
         model.addObject("book",books);
-        model.addObject("filter",filter);
         model.setViewName("/book");
         return model;
     }
