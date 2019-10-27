@@ -14,7 +14,8 @@ import java.util.*;
 import java.util.List;
 
 @Entity
-@Table(name="user")
+@Table(name="User")
+
 public class User implements UserDetails{
 
     @Id
@@ -49,16 +50,17 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name="book_user",
+            name="User_Book",
             joinColumns = {
                     @JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-                    @JoinColumn(name = "book_id", referencedColumnName = "num")})
-    @ManyToMany
+                    @JoinColumn(name = "book_id", referencedColumnName = "num")}
+    )
     @Fetch(FetchMode.SELECT)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Book> books;
+    private List<Book> books=new ArrayList<>();
 
     public User() {
 
@@ -73,6 +75,13 @@ public class User implements UserDetails{
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public User(String username, String password, Set<Role> roles, List<Book> books) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.books = books;
     }
 
     @Override
@@ -96,7 +105,7 @@ public class User implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        return roles;
     }
 
     public String getPassword() {
@@ -115,9 +124,6 @@ public class User implements UserDetails{
         this.active = active;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;

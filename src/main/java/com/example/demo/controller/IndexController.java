@@ -49,7 +49,7 @@ public class IndexController {
     }
 
     @GetMapping("/")
-    public ModelAndView index(ModelAndView model){
+    public ModelAndView index(ModelAndView model, @AuthenticationPrincipal User user, Principal principal){
 
         model.setViewName("index");
         return model;

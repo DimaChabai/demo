@@ -1,11 +1,16 @@
 package com.example.demo.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-public class Book {
+@Table(name="Book")
+
+public class Book implements Serializable {
 
     @Id
     @GeneratedValue
@@ -19,6 +24,17 @@ public class Book {
     public Book(String filename, String name) {
         this.filename = filename;
         this.name = name;
+    }
+
+    @ManyToMany(mappedBy = "books",fetch = FetchType.EAGER)
+    private Set<User> users=new HashSet<>();
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public Long getNum() {

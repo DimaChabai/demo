@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,9 +35,10 @@ public class BookController {
         this.userService = userService;
 
     }
-
+    @Transactional
     @GetMapping
     public ModelAndView getUsersBooks(@RequestParam(required = false) String filter,ModelAndView model, @AuthenticationPrincipal User user) {
+        List<Book> books1=userService.loadUserByUsername(user.getUsername()).getBooks();
         List<Book> books=user.getBooks();
         if(filter!=null && !filter.isEmpty()) {
             List<Book> userBooks = user.getBooks();
@@ -51,12 +53,15 @@ public class BookController {
 
     @GetMapping("/delFromList")
     public ModelAndView delBookFromList(@RequestParam Long bookId, @AuthenticationPrincipal User user,ModelAndView model){
-        List<Book> books=userService.loadUserByUsername(user.getUsername()).getBooks();
+        List<Book> books=user.getBooks();
         Book book=bookService.getBookById(bookId);
-        books=books.stream().filter((v)->v.getNum()!=bookId).collect(Collectors.toList());
+        books.removeIf((v)-> Objects.equals(v.getNum(), bookId));
         user.setBooks(books);
-        userService.updateUser(user);
-        model.addObject("book",books);
+        userService.saveUser(user);
+        User usr=userService.loadUserByUsername(user.getUsername());
+        usr.setBooks(Collections.emptyList());
+        userService.saveUser(usr);
+        model.addObject("books",books);
         model.setViewName("/book");
         return model;
     }

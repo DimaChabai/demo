@@ -36,7 +36,6 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         private String tokenType = "Bearer";
         private AuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
         private PrincipalExtractor principalExtractor = new CustomPrincipalExtractor();
-
         private UserService userService;
 
     public void setUsersRepository( UserService userService) {
